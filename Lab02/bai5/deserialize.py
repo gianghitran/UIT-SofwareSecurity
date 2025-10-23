@@ -1,0 +1,3 @@
+import pickle
+with open('serial', 'rb') as f:
+	pickle.loads(f.read())
